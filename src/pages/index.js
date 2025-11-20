@@ -1,78 +1,452 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+"use client";
+import { useEffect, useState } from "react";
+import {
+  Leaf,
+  Factory,
+  ShieldCheck,
+  Users,
+  Store,
+  BadgeCheck,
+} from "lucide-react";
+import TestimonialsCarousel from "@/components/TestimonialsCarousel";
+import { fetchProducts } from "../services/productService"; // Adjust the import path as needed
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+export const metadata = {
+  title: "Home | My Website",
+  description:
+    "Welcome to our official website. Learn more about us and our products.",
+  keywords: ["Home", "Best Products", "Company"],
+};
 
 export default function Home() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Initialize AOS
+    const initAOS = async () => {
+      const AOS = await import("aos");
+      const style = document.createElement("link");
+      style.rel = "stylesheet";
+      style.href = "https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css";
+      document.head.appendChild(style);
+
+      AOS.init({
+        duration: 1000,
+        easing: "ease-in-out",
+        once: false,
+        mirror: true,
+        offset: 100,
+      });
+
+      // Refresh AOS after a delay
+      setTimeout(() => {
+        AOS.refresh();
+      }, 100);
+    };
+
+    initAOS();
+  }, []);
+
+  // Fetch products from API (replaces hardcoded products in grid)
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const apiResponse = await fetchProducts();
+
+        // Log the fetched payload for debugging
+        console.log("Fetched API Payload for Home:", apiResponse);
+
+        // Ensure data is an array (axios wraps response in { data: [...] })
+        const rawProducts = apiResponse || [];
+        // Map API response to component's expected structure (updated for new schema)
+        // Assumptions:
+        // - _id -> id
+        // - productName -> title
+        // - sellingPrice -> rate (for pricing display)
+        // - No expiry needed here
+        // - unit/quantity: Not displayed in cards, but used for centered card
+        // - mrp: Not used here
+        // - image and description map directly
+        // Limit to 4 products for grid (if more, slice; if less, grid adapts)
+        const mappedProducts = rawProducts.slice(0, 4).map((item) => ({
+          id: item._id,
+          title: item.productName,
+          image:
+            `${process.env.NEXT_PUBLIC_BASE_URL}${item.image}` ||
+            `${process.env.NEXT_PUBLIC_BASE_URL}/default-product.png`, // Ensures proper path with leading / and fallback
+          description: item.description || "",
+          unit: item.unit || "kg",
+          quantity: item.quantity || "",
+          rate: item.sellingPrice || 0, // Use sellingPrice as rate for display
+        }));
+
+        setProducts(mappedProducts);
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+        setError("Failed to load products. Please try again.");
+        // Fallback to empty array (grid will be empty, but UI intact)
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, []);
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}
-    >
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="w-full bg-yellow-100 overflow-hidden">
+      {/* ✅ Hero Section */}
+      <section className="relative w-full overflow-hidden">
+        {/* ✅ Background Image */}
+        <img
+          src="hero_image.png"
+          alt="Home Banner"
+          className="
+            w-full
+            h-auto
+            object-contain
+            sm:object-cover
+            sm:h-[120vh]
+          "
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the index.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+        {/* ✅ Overlay (visible on ALL screens now) */}
+        <div className=""></div>
+        {/* ✅ Centered Text */}
+        <div
+          className="
+            absolute
+            inset-0
+            flex
+            flex-col
+            justify-center
+            items-center
+            text-center
+            px-4
+            sm:px-6
+            md:px-12
+          "
+        ></div>
+      </section>
+
+      {/* 🚀 Scrolling Single Line (Right → Left) - FIXED */}
+      <section className="w-full overflow-hidden bg-yellow-200 py-4">
+        <div className="marquee">
+          <div className="track">
+            <p className="text-xl md:text-2xl font-semibold text-gray-900">
+              ★ 100% Pure Cold-Pressed Oils • Freshness Guaranteed • Trusted by
+              5,00,000+ Families • Premium Quality You Can Taste ★
+            </p>
+            <p className="text-xl md:text-2xl font-semibold text-gray-900">
+              100% Pure Cold-Pressed Oils • Freshness Guaranteed • Trusted by
+              5,00,000+ Families • Premium Quality You Can Taste ★
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ✅ Content Below Hero */}
+      <section
+        className="max-w-7xl mx-auto py-10 px-6 md:px-16 text-center"
+        data-aos="fade-up"
+      >
+        <h2
+          className="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4"
+          data-aos="fade-down"
+          data-aos-delay="100"
+        >
+          Our Premium Range Products
+        </h2>
+        <p
+          className="text-gray-600 max-w-2xl mx-auto mb-10"
+          data-aos="fade-up"
+          data-aos-delay="200"
+        >
+          We bring you the purest natural products, crafted with care and
+          precision. Our mission is to deliver freshness, quality, and trust in
+          every product.
+        </p>
+
+        {/* ✅ Product Cards Grid - Now Dynamic */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+          {loading ? (
+            <p className="col-span-full text-center text-gray-600">
+              Loading products...
+            </p>
+          ) : error ? (
+            <p className="col-span-full text-center text-red-500">{error}</p>
+          ) : products.length === 0 ? (
+            <p className="col-span-full text-center text-gray-600">
+              No products available.
+            </p>
+          ) : (
+            products.map((product, index) => (
+              <div
+                key={product.id}
+                className="bg-white rounded-xl shadow-md hover:shadow-xl transition p-4"
+                data-aos={
+                  index % 4 === 0
+                    ? "fade-right"
+                    : index % 4 === 1
+                    ? "fade-up"
+                    : index % 4 === 2
+                    ? "fade-up"
+                    : "fade-left"
+                }
+                data-aos-delay={(index + 1) * 100}
+              >
+                <img
+                  src={product.image}
+                  alt={product.title}
+                  className="w-full h-48 object-contain mb-4"
+                />
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {product.title}
+                </h3>
+                <p className="text-gray-600 text-sm mt-2">
+                  {product.description}
+                </p>
+              </div>
+            ))
+          )}
+
+          {/* 👉 Centered Vasundhara Oil Details - Dynamic based on first product */}
+          {!loading && !error && products.length > 0 && (
+            <div
+              className="col-span-full flex justify-center mt-10"
+              data-aos="zoom-in"
+              data-aos-delay="500"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              <div className="bg-white rounded-xl p-6 w-full max-w-md text-center">
+                <h3 className="text-xl font-semibold text-gray-900">
+                  {products[0].title} – {products[0].quantity} {products[0].unit.toUpperCase()}
+                </h3>
+                <p className="text-green-600 font-semibold text-2xl mt-2">
+                  ₹{products[0].rate}
+                </p>
+                <span className="text-yellow-500 text-sm font-medium block mt-1">
+                  ⭐⭐⭐⭐⭐{" "}
+                  <span className="text-gray-500">(150 reviews)</span>
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ✨ Trusted Across the Country Section */}
+      <section className="max-w-7xl mx-auto py-20" data-aos="fade-up">
+        <div className="container mx-auto px-6">
+          {/* Heading */}
+          <h2
+            className="text-4xl font-heading font-bold text-black text-center mb-4"
+            data-aos="fade-down"
+          >
+            Trusted Across the Country
+          </h2>
+          <p
+            className="text-center text-black font-body max-w-3xl mx-auto mb-12"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            The quality and purity of our oil have made Vasundhara a trusted
+            name in kitchens across India. We're proud to be the preferred
+            choice for families who value health, taste, and authenticity.
           </p>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Card 1 */}
+            <div
+              className="p-8 rounded-2xl text-black bg-amber-200 shadow-lg border border-primary/10 hover:shadow-2xl transition-all text-center"
+              data-aos="fade-left"
+              data-aos-delay="100"
+            >
+              <div className="w-16 h-16 mx-auto mb-4 bg-white text-gray-600 rounded-full bg-primary/10 flex items-center justify-center">
+                <Users className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-5xl font-extrabold text-gray-600 mb-2">
+                500K+
+              </h3>
+              <p className="text-lg font-semibold text-gray-700 mb-2">
+                Happy Customers
+              </p>
+              <p className="text-muted-foreground text-sm">
+                Families who trust Vasundhara for daily cooking.
+              </p>
+            </div>
+
+            {/* Card 2 */}
+            <div
+              className="p-8 rounded-2xl bg-amber-200 shadow-lg text-black border border-primary/10 hover:shadow-2xl transition-all text-center"
+              data-aos="fade-up"
+              data-aos-delay="200"
+            >
+              <div className="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
+                <Store className="w-8 h-8 text-gray-600" />
+              </div>
+              <h3 className="text-5xl font-extrabold text-gray-600 mb-2">
+                1500+
+              </h3>
+              <p className="text-lg font-semibold text-gray-700 mb-2">
+                Retail Partners
+              </p>
+              <p className="text-muted-foreground text-sm">
+                Stores across India proudly selling Vasundhara oil.
+              </p>
+            </div>
+
+            {/* Card 3 */}
+            <div
+              className="p-8 rounded-2xl bg-amber-200 text-black shadow-lg border border-primary/10 hover:shadow-2xl transition-all text-center"
+              data-aos="fade-right"
+              data-aos-delay="300"
+            >
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white flex items-center justify-center">
+                <BadgeCheck className="w-8 h-8 text-gray-600" />
+              </div>
+              <h3 className="text-5xl font-extrabold text-gray-600 mb-2">
+                25+ Years
+              </h3>
+              <p className="text-lg font-semibold text-gray-700 mb-2">
+                Of Trust & Quality
+              </p>
+              <p className="text-muted-foreground text-sm">
+                Delivering purity with decades of expertise.
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </section>
+
+      {/* ✨ About Groundnut Oil Section (New Added Section) */}
+      <section className="max-w-7xl mx-auto py-10" data-aos="fade-up">
+        <div className="px-4 sm:px-6 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 items-center w-full">
+          {/* 👉 Left Side Image */}
+          <div
+            className="w-full flex justify-center md:justify-start"
+            data-aos="fade-right"
+            data-aos-delay="100"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <img
+              src="nuts.png"
+              alt="Groundnut Oil"
+              className="w-full max-w-sm md:max-w-none h-auto rounded-2xl object-contain"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs/pages/getting-started?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </div>
+
+          {/* 👉 Right Side Content */}
+          <div
+            className="w-full text-black px-0 md:px-4"
+            data-aos="fade-left"
+            data-aos-delay="200"
           >
-            Documentation
-          </a>
+            <h2 className="text-4xl text-black font-heading font-bold mb-6 leading-snug">
+              The Rich Taste of Original Groundnut Oil
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+              At <span className="font-semibold text-primary">Sahaj</span>, we
+              keep things simple. Our groundnut oil is made with only real
+              peanuts — nothing added and nothing hidden. Just the pure, natural
+              essence of groundnuts that nourishes both your food and your body.
+            </p>
+            <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+              Skip the processed alternatives like palm oil and choose a
+              healthier oil filled with heart-friendly monounsaturated fats.
+              Experience the true taste and purity of nature.
+            </p>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* excellence */}
+      <section className="max-w-7xl mx-auto py-20 bg-card" data-aos="fade-up">
+        <div className="container mx-auto px-6 text-black">
+          <h2
+            className="text-4xl font-heading font-bold text-primary text-center mb-4"
+            data-aos="fade-down"
+          >
+            From Farm to Family
+          </h2>
+          <p
+            className="text-center text-muted-foreground font-body mb-12 max-w-2xl mx-auto"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            Every drop of Vasundhara oil follows a journey of excellence
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Card 1 */}
+            <div
+              className="p-8 rounded-2xl bg-amber-200 border border-border text-center shadow-md hover:shadow-xl transition-all"
+              data-aos="fade-left"
+              data-aos-delay="100"
+            >
+              <div className="w-16 h-16 bg-primary/10 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <Leaf className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-heading text-black font-semibold mb-3">
+                Finest Sourced Peanuts
+              </h3>
+              <p className="text-muted-foreground font-body">
+                We select only the highest quality peanuts from trusted farms
+              </p>
+            </div>
+
+            {/* Card 2 */}
+            <div
+              className="p-8 rounded-2xl bg-amber-200 border border-border text-center shadow-md hover:shadow-xl transition-all"
+              data-aos="fade-up"
+              data-aos-delay="200"
+            >
+              <div className="w-16 h-16 bg-primary/10 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <Factory className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-heading text-black font-semibold mb-3">
+                Advanced Cold-Press Facility
+              </h3>
+              <p className="text-muted-foreground font-body">
+                State-of-the-art machinery preserves natural nutrients and
+                flavor
+              </p>
+            </div>
+
+            {/* Card 3 */}
+            <div
+              className="p-8 rounded-2xl bg-amber-200 border border-border text-center shadow-md hover:shadow-xl transition-all"
+              data-aos="fade-right"
+              data-aos-delay="300"
+            >
+              <div className="w-16 h-16 bg-primary/10 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <ShieldCheck className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-heading text-black font-semibold mb-3">
+                Untouched by Hand, Sealed for Purity
+              </h3>
+              <p className="text-muted-foreground font-body">
+                Automated bottling ensures hygiene and maintains freshness
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* testimonum */}
+      <section className="py-20" data-aos="fade-up">
+        <div className="container mx-auto px-4">
+          <h2
+            className="text-4xl font-heading font-bold text-black text-center mb-12"
+            data-aos="fade-down"
+          >
+            What Our Customers Say
+          </h2>
+          <TestimonialsCarousel />
+        </div>
+      </section>
+    </main>
   );
 }
