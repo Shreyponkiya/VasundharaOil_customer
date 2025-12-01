@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchProducts } from "../services/productService"; // Adjust the import path as needed
-
+import OilDropLoader from "@/components/OilDropLoader";
 export default function HealthBenefitsPage() {
   const router = useRouter();
   const [products, setProducts] = useState([]);
@@ -61,7 +61,7 @@ export default function HealthBenefitsPage() {
     return (
       <main className="bg-[#FFF8EA] text-[#4A3B2A]">
         <section className="py-16 px-6 text-center">
-          <p className="text-lg text-[#5A4633]">Loading products...</p>
+          <p className="text-lg text-[#5A4633]"><OilDropLoader/></p>
         </section>
       </main>
     );

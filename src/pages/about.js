@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Leaf,
   Factory,
@@ -9,14 +9,18 @@ import {
   BadgeCheck,
 } from "lucide-react";
 import ProcessSection from "@/components/ProcessSection";
+import OilDropLoader from "@/components/OilDropLoader";
+
 export const metadata = {
-  title: "Home | My Website",
+  title: "About | My Website",
   description:
     "Welcome to our official website. Learn more about us and our products.",
   keywords: ["Home", "Best Products", "Company"],
 };
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const initAOS = async () => {
       const AOS = await import("aos");
@@ -41,6 +45,27 @@ export default function Home() {
     initAOS();
   }, []);
 
+  useEffect(() => {
+    const handleLoad = () => {
+      setIsLoading(false);
+    };
+
+    if (document.readyState === "complete") {
+      setIsLoading(false);
+    } else {
+      window.addEventListener("load", handleLoad);
+      return () => window.removeEventListener("load", handleLoad);
+    }
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+        <OilDropLoader />
+      </div>
+    );
+  }
+
   return (
     <main className="w-full bg-yellow-100 overflow-hidden">
       {/* ⭐ HERO SECTION ⭐ */}
@@ -54,11 +79,17 @@ export default function Home() {
 
       {/* ⭐ MOVING MARQUEE ⭐ */}
       <section className="w-full overflow-hidden bg-yellow-200 py-4">
-        <div className="inline-block whitespace-nowrap animate-marquee text-xl md:text-2xl font-semibold text-gray-900">
-          ★ 100% Pure Cold-Pressed Oils • Freshness Guaranteed • Trusted by
-          5,00,000+ Families • Premium Quality You Can Taste ★ 100% Pure
-          Cold-Pressed Oils • Freshness Guaranteed • Trusted by 5,00,000+
-          Families • Premium Quality You Can Taste ★
+        <div className="marquee">
+          <div className="track">
+            <p className="text-xl md:text-2xl font-semibold text-gray-900">
+              ★ 100% Pure Cold-Pressed Oils • Freshness Guaranteed • Trusted by
+              5,00,000+ Families • Premium Quality You Can Taste ★
+            </p>
+            <p className="text-xl md:text-2xl font-semibold text-gray-900">
+              100% Pure Cold-Pressed Oils • Freshness Guaranteed • Trusted by
+              5,00,000+ Families • Premium Quality You Can Taste ★
+            </p>
+          </div>
         </div>
       </section>
 
@@ -68,7 +99,7 @@ export default function Home() {
           src="image1.jpg"
           alt="About Us"
           data-aos="fade-right"
-          className="rounded-xl shadow-lg"
+          className="rounded-xl shadow-lg h-[60vh]"
         />
 
         <div data-aos="fade-left">
@@ -102,7 +133,7 @@ export default function Home() {
           src="image.jpg"
           alt="Healthy Process"
           data-aos="fade-left"
-          className="rounded-xl shadow-lg"
+          className="rounded-xl shadow-lg h-[60vh]"
         />
       </section>
 
@@ -112,7 +143,7 @@ export default function Home() {
           src="image2.jpg"
           alt="Trusted Quality"
           data-aos="fade-right"
-          className="rounded-xl shadow-lg"
+          className="rounded-xl shadow-lg h-[60vh]"
         />
 
         <div data-aos="fade-left">

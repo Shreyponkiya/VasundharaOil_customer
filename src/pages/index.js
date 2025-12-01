@@ -10,18 +10,56 @@ import {
 } from "lucide-react";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { fetchProducts } from "../services/productService"; // Adjust the import path as needed
+import OilDropLoader from "@/components/OilDropLoader";
 
 export const metadata = {
-  title: "Home | My Website",
+  title: "Vasundhara Pure Cold-Pressed Oils | 100% Natural & Chemical-Free",
   description:
-    "Welcome to our official website. Learn more about us and our products.",
-  keywords: ["Home", "Best Products", "Company"],
+    "Buy premium cold-pressed groundnut oil, coconut oil, sesame oil, and more. 100% pure, fresh, and chemical-free oils trusted by 5,00,000+ families across India.",
+  keywords: [
+    "cold pressed oil",
+    "groundnut oil",
+    "pure oil",
+    "vasundhara oil",
+    "healthy cooking oil",
+    "wood pressed oil",
+    "chemical free oil",
+    "natural groundnut oil",
+    "best oil for cooking",
+  ],
+  openGraph: {
+    title: "Vasundhara Oils – 100% Pure Cold-Pressed Oils",
+    description:
+      "Premium cold-pressed oils made from the finest G20 peanuts. Fresh, pure, and trusted by millions.",
+    url: "https://shreevasundharaoil.com",
+    siteName: "Vasundhara Oil",
+    images: [
+      {
+        url: "/hero_image.png",
+        width: 1200,
+        height: 630,
+        alt: "Vasundhara Cold-Pressed Groundnut Oil",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vasundhara Oils",
+    description: "100% pure cold-pressed oils made from premium G20 peanuts.",
+    images: ["/hero_image.png"],
+  },
+  alternates: {
+    canonical: "https://shreevasundharaoil.com",
+  },
 };
 
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
 
   useEffect(() => {
     // Initialize AOS
@@ -49,6 +87,9 @@ export default function Home() {
     initAOS();
   }, []);
 
+  const handleBuyNow = () => {
+    router.push("/products"); // Adjust route if your products page is at a different path
+  };
   // Fetch products from API (replaces hardcoded products in grid)
   useEffect(() => {
     const loadProducts = async () => {
@@ -173,9 +214,9 @@ export default function Home() {
         {/* ✅ Product Cards Grid - Now Dynamic */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
           {loading ? (
-            <p className="col-span-full text-center text-gray-600">
-              Loading products...
-            </p>
+            <div className="col-span-full text-center text-gray-600">
+              <OilDropLoader />
+            </div>
           ) : error ? (
             <p className="col-span-full text-center text-red-500">{error}</p>
           ) : products.length === 0 ? (
@@ -222,7 +263,8 @@ export default function Home() {
             >
               <div className="bg-white rounded-xl p-6 w-full max-w-md text-center">
                 <h3 className="text-xl font-semibold text-gray-900">
-                  {products[0].title} – {products[0].quantity} {products[0].unit.toUpperCase()}
+                  {products[0].title} – {products[0].quantity}{" "}
+                  {products[0].unit.toUpperCase()}
                 </h3>
                 <p className="text-green-600 font-semibold text-2xl mt-2">
                   ₹{products[0].rate}
@@ -234,6 +276,14 @@ export default function Home() {
               </div>
             </div>
           )}
+          <div className="col-span-full flex justify-center mt-6">
+            <button
+              onClick={handleBuyNow}
+              className="px-8 py-3 bg-amber-600 text-white rounded-lg text-lg shadow-md hover:bg-amber-700 transition"
+            >
+              Buy Now
+            </button>
+          </div>
         </div>
       </section>
 
@@ -269,7 +319,7 @@ export default function Home() {
                 <Users className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-5xl font-extrabold text-gray-600 mb-2">
-                500K+
+                50K+
               </h3>
               <p className="text-lg font-semibold text-gray-700 mb-2">
                 Happy Customers
@@ -289,7 +339,7 @@ export default function Home() {
                 <Store className="w-8 h-8 text-gray-600" />
               </div>
               <h3 className="text-5xl font-extrabold text-gray-600 mb-2">
-                1500+
+                150+
               </h3>
               <p className="text-lg font-semibold text-gray-700 mb-2">
                 Retail Partners
@@ -309,7 +359,7 @@ export default function Home() {
                 <BadgeCheck className="w-8 h-8 text-gray-600" />
               </div>
               <h3 className="text-5xl font-extrabold text-gray-600 mb-2">
-                25+ Years
+                3+ Years
               </h3>
               <p className="text-lg font-semibold text-gray-700 mb-2">
                 Of Trust & Quality
@@ -348,10 +398,11 @@ export default function Home() {
               The Rich Taste of Original Groundnut Oil
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-              At <span className="font-semibold text-primary">Sahaj</span>, we
-              keep things simple. Our groundnut oil is made with only real
-              peanuts — nothing added and nothing hidden. Just the pure, natural
-              essence of groundnuts that nourishes both your food and your body.
+              At <span className="font-semibold text-primary">Vasundhara</span>,
+              we keep things simple. Our groundnut oil is made with only real
+              G20 peanuts — nothing added and nothing hidden. Just the pure,
+              natural essence of groundnuts that nourishes both your food and
+              your body.
             </p>
             <p className="text-muted-foreground text-lg leading-relaxed mb-6">
               Skip the processed alternatives like palm oil and choose a

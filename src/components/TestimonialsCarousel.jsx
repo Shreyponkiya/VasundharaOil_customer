@@ -4,11 +4,11 @@ import { useState, useEffect, useRef } from "react";
 
 export default function TestimonialsCarousel() {
   const testimonials = [
-    { text: "The best peanut oil I've ever used. The flavor is amazing!", name: "Priya Sharma" },
-    { text: "Our restaurant uses only Vasundhara. Customers love the taste!", name: "Rajesh Kumar" },
+    { text: "The best peanut oil I've ever used. The flavor is amazing!", name: "Sanjaybhai Antala" },
+    { text: "Our restaurant uses only Vasundhara. Customers love the taste!", name: "Sureshbhai Rathod" },
     { text: "Pure, healthy and premium quality oil for every household.", name: "Anita Desai" },
     { text: "Affordable and exceptional aroma. My family loves it!", name: "Mehul Patel" },
-    { text: "Great quality — better than any oil I've used before.", name: "Nidhi Thakkar" },
+    { text: "Great quality — better than any oil I've used before.", name: "Amitbhai Bhalodiya" },
   ];
 
   const [index, setIndex] = useState(0);
@@ -49,8 +49,11 @@ export default function TestimonialsCarousel() {
                 .slice(slideIndex * itemsPerView, (slideIndex + 1) * itemsPerView)
                 .map((item, i) => (
                   <div key={i} className="flex-1">
-                    <div className="p-8 rounded-2xl bg-white shadow-lg border border-blue-200 hover:shadow-2xl">
-                      <p className="text-gray-700 italic mb-4">"{item.text}"</p>
+                    <div className="bg-white border border-blue-200 shadow-lg hover:shadow-2xl rounded-2xl p-8 
+                                    flex flex-col justify-between h-full min-h-[150px]">
+                      <p className="text-gray-700 italic mb-4 flex-grow">
+                        "{item.text}"
+                      </p>
                       <p className="text-blue-700 font-semibold text-center text-lg">
                         - {item.name}
                       </p>

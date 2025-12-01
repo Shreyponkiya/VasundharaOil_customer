@@ -5,15 +5,17 @@ import { createPortal } from "react-dom";
 import { X, ShoppingCart, Plus, Minus } from "lucide-react";
 import { fetchProducts } from "../services/productService";
 import { postOrder } from "../services/orderService"; // Import the order service
+import { ToastContainer, toast } from "react-toastify";
+import OilDropLoader from "@/components/OilDropLoader";
 
 // Extracted OrderModal as a separate stable component to prevent re-mounting on parent re-renders
-const OrderModal = ({ 
-  showModal, 
-  setShowModal, 
-  cart, 
-  totalPrice, 
-  orderForm, 
-  handleInputChange, 
+const OrderModal = ({
+  showModal,
+  setShowModal,
+  cart,
+  totalPrice,
+  orderForm,
+  handleInputChange,
   handleConfirmOrder,
   fullNameRef,
   mobileRef,
@@ -21,7 +23,7 @@ const OrderModal = ({
   pincodeRef,
   cityRef,
   addressRef,
-  isSubmitting
+  isSubmitting,
 }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -49,7 +51,10 @@ const OrderModal = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 max-h-[calc(90vh-200px)] overflow-y-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 max-h-[calc(90vh-200px)] overflow-y-auto"
+        >
           {/* Order Form */}
           <div className="space-y-4 mb-6">
             <div>
@@ -235,7 +240,10 @@ export default function ProductSection() {
     const now = new Date();
     const expiryDate = new Date(now);
     expiryDate.setFullYear(now.getFullYear() + 1);
-    return expiryDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    return expiryDate.toLocaleDateString("en-US", {
+      month: "short",
+      year: "numeric",
+    });
   };
 
   useEffect(() => {
@@ -270,7 +278,9 @@ export default function ProductSection() {
         const mappedProducts = rawProducts.map((item) => ({
           id: item._id,
           title: item.productName,
-          image: `${process.env.NEXT_PUBLIC_BASE_URL}${item.image}` || `${process.env.NEXT_PUBLIC_BASE_URL}/default-product.png`, // Adjusted for backend static serve; fallback to default
+          image:
+            `${process.env.NEXT_PUBLIC_BASE_URL}${item.image}` ||
+            `${process.env.NEXT_PUBLIC_BASE_URL}/default-product.png`, // Adjusted for backend static serve; fallback to default
           expiry: getExpiryDate(),
           mrp: item.mrp || 0,
           discountPrice: item.sellingPrice || 0,
@@ -333,22 +343,30 @@ export default function ProductSection() {
 
   const handleConfirmOrder = async (e) => {
     if (e) e.preventDefault(); // Prevent default if event is passed from form submit
-    
+
     // Basic validation for required fields
-    const requiredFields = ["fullName", "mobile", "email", "pincode", "city", "address"];
+    const requiredFields = [
+      "fullName",
+      "mobile",
+      "email",
+      "pincode",
+      "city",
+      "address",
+    ];
     const fieldLabels = {
       fullName: "Full Name",
       mobile: "Mobile Number",
       email: "Email",
       pincode: "Pincode",
       city: "City",
-      address: "Full Address"
+      address: "Full Address",
     };
-   
-    const firstEmptyField = requiredFields.find((field) => !orderForm[field].trim());
+
+    const firstEmptyField = requiredFields.find(
+      (field) => !orderForm[field].trim()
+    );
 
     if (firstEmptyField) {
-      alert(`Please fill in ${fieldLabels[firstEmptyField]}`);
       // Focus on the first empty field using refs
       const refMap = {
         fullName: fullNameRef,
@@ -356,14 +374,16 @@ export default function ProductSection() {
         email: emailRef,
         pincode: pincodeRef,
         city: cityRef,
-        address: addressRef
+        address: addressRef,
       };
       const inputRef = refMap[firstEmptyField];
       if (inputRef?.current) {
         inputRef.current.focus();
       } else {
         // Fallback to querySelector
-        const input = document.querySelector(`input[name="${firstEmptyField}"], textarea[name="${firstEmptyField}"]`);
+        const input = document.querySelector(
+          `input[name="${firstEmptyField}"], textarea[name="${firstEmptyField}"]`
+        );
         if (input) {
           input.focus();
         }
@@ -372,9 +392,9 @@ export default function ProductSection() {
     }
 
     // Validate mobile number (10 digits)
-    const mobileRegex = /^[0-9]{10}$/;
-    if (!mobileRegex.test(orderForm.mobile)) {
-      alert("Please enter a valid 10-digit mobile number");
+    const mobileRegex = /^(?:\+91|91)?[6-9]\d{9}$/;
+    if (!mobileRegex.test(orderForm.mobile.trim())) {
+      toast.error("Please enter a valid mobile number (10 digits or +91)");
       mobileRef.current?.focus();
       return;
     }
@@ -382,7 +402,7 @@ export default function ProductSection() {
     // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(orderForm.email)) {
-      alert("Please enter a valid email address");
+      toast.error("Please enter a valid email address");
       emailRef.current?.focus();
       return;
     }
@@ -390,7 +410,7 @@ export default function ProductSection() {
     // Validate pincode (6 digits)
     const pincodeRegex = /^[0-9]{6}$/;
     if (!pincodeRegex.test(orderForm.pincode)) {
-      alert("Please enter a valid 6-digit pincode");
+      toast.error("Please enter a valid 6-digit pincode");
       pincodeRef.current?.focus();
       return;
     }
@@ -420,10 +440,8 @@ export default function ProductSection() {
       console.log("Submitting order payload:", orderPayload);
       const response = await postOrder(orderPayload);
       console.log("Order placed successfully:", response);
-      alert("Order placed successfully!");
     } catch (error) {
       console.error("Failed to place order:", error);
-      alert("Failed to place order. Please try again.");
     } finally {
       setIsSubmitting(false);
       setShowModal(false);
@@ -553,99 +571,103 @@ export default function ProductSection() {
         </h2>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto">
-          {loading && (
-            <p className="text-center col-span-3 text-gray-600 text-lg">
-              Loading products...
-            </p>
-          )}
-          {error && (
-            <p className="text-center col-span-3 text-red-500 text-lg">
-              {error}
-            </p>
-          )}
+        {error ? (
+          <p className="text-center text-red-500 text-lg">{error}</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto">
+            {loading && (
+              <div className="text-center col-span-3 text-gray-600 text-lg">
+                <OilDropLoader />
+              </div>
+            )}
+            {error && (
+              <p className="text-center col-span-3 text-red-500 text-lg">
+                {error}
+              </p>
+            )}
 
-          {products.map((product) => {
-            const qty = getQty(product.id);
+            {products.map((product) => {
+              const qty = getQty(product.id);
 
-            return (
-              <div
-                key={product.id}
-                className="bg-white p-5 rounded-xl shadow-lg border border-yellow-500 flex flex-col justify-between hover:shadow-xl transition-shadow relative"
-              >
-                <div>
-                  <div className="relative">
-                    <img
-                      src={product.image}
-                      alt={product.title}
-                      className="w-full h-52 object-contain rounded-lg bg-white p-2"
-                    />
-                    {product.discountPercentage > 0 && (
-                      <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-bold">
-                        {product.discountPercentage}% OFF
+              return (
+                <div
+                  key={product.id}
+                  className="bg-white p-5 rounded-xl shadow-lg border border-yellow-500 flex flex-col justify-between hover:shadow-xl transition-shadow relative"
+                >
+                  <div>
+                    <div className="relative">
+                      <img
+                        src={product.image}
+                        alt={product.title}
+                        className="w-full h-52 object-contain rounded-lg bg-white p-2"
+                      />
+                      {product.discountPercentage > 0 && (
+                        <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-bold">
+                          {product.discountPercentage}% OFF
+                        </div>
+                      )}
+                    </div>
+
+                    <h3 className="text-xl font-bold mt-4 text-black">
+                      {product.title}
+                    </h3>
+
+                    <p className="text-gray-600">
+                      {`${product.quantity} ${product.unit.toUpperCase()}`}
+                    </p>
+
+                    <p className="text-gray-600">Expiry: {product.expiry}</p>
+
+                    <p className="mt-2">
+                      <span className="line-through text-red-500">
+                        ₹{product.mrp}
+                      </span>
+                      <span className="text-green-600 font-bold text-lg ml-2">
+                        ₹{product.discountPrice}
+                      </span>
+                    </p>
+                  </div>
+
+                  {/* Cart Section */}
+                  <div className="mt-5 bg-yellow-50 p-3 rounded-lg border border-yellow-300">
+                    {qty === 0 ? (
+                      <button
+                        onClick={() => addToCart(product)}
+                        className="w-full bg-yellow-500 text-black font-bold py-2 rounded-lg hover:bg-yellow-400 transition"
+                      >
+                        Add to Cart
+                      </button>
+                    ) : (
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => decreaseQty(product.id)}
+                            className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                          >
+                            <Minus className="w-4 h-4" />
+                          </button>
+                          <span className="text-xl font-bold w-8 text-center">
+                            {qty}
+                          </span>
+                          <button
+                            onClick={() => increaseQty(product.id)}
+                            className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+
+                        <p className="font-bold text-yellow-800">
+                          ₹{product.discountPrice * qty}
+                        </p>
                       </div>
                     )}
                   </div>
-
-                  <h3 className="text-xl font-bold mt-4 text-black">
-                    {product.title}
-                  </h3>
-
-                  <p className="text-gray-600">
-                    {`${product.quantity} ${product.unit.toUpperCase()}`}
-                  </p>
-
-                  <p className="text-gray-600">Expiry: {product.expiry}</p>
-
-                  <p className="mt-2">
-                    <span className="line-through text-red-500">
-                      ₹{product.mrp}
-                    </span>
-                    <span className="text-green-600 font-bold text-lg ml-2">
-                      ₹{product.discountPrice}
-                    </span>
-                  </p>
                 </div>
-
-                {/* Cart Section */}
-                <div className="mt-5 bg-yellow-50 p-3 rounded-lg border border-yellow-300">
-                  {qty === 0 ? (
-                    <button
-                      onClick={() => addToCart(product)}
-                      className="w-full bg-yellow-500 text-black font-bold py-2 rounded-lg hover:bg-yellow-400 transition"
-                    >
-                      Add to Cart
-                    </button>
-                  ) : (
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => decreaseQty(product.id)}
-                          className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                        >
-                          <Minus className="w-4 h-4" />
-                        </button>
-                        <span className="text-xl font-bold w-8 text-center">
-                          {qty}
-                        </span>
-                        <button
-                          onClick={() => increaseQty(product.id)}
-                          className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      <p className="font-bold text-yellow-800">
-                        ₹{product.discountPrice * qty}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Render Cart Button, Cart Drawer and Modal using Portal */}
@@ -653,25 +675,27 @@ export default function ProductSection() {
         cart.length > 0 &&
         createPortal(<CartButton />, document.body)}
       {mounted && showCart && createPortal(<CartDrawer />, document.body)}
-      {mounted && showModal && createPortal(
-        <OrderModal
-          showModal={showModal}
-          setShowModal={setShowModal}
-          cart={cart}
-          totalPrice={totalPrice}
-          orderForm={orderForm}
-          handleInputChange={handleInputChange}
-          handleConfirmOrder={handleConfirmOrder}
-          fullNameRef={fullNameRef}
-          mobileRef={mobileRef}
-          emailRef={emailRef}
-          pincodeRef={pincodeRef}
-          cityRef={cityRef}
-          addressRef={addressRef}
-          isSubmitting={isSubmitting}
-        />,
-        document.body
-      )}
+      {mounted &&
+        showModal &&
+        createPortal(
+          <OrderModal
+            showModal={showModal}
+            setShowModal={setShowModal}
+            cart={cart}
+            totalPrice={totalPrice}
+            orderForm={orderForm}
+            handleInputChange={handleInputChange}
+            handleConfirmOrder={handleConfirmOrder}
+            fullNameRef={fullNameRef}
+            mobileRef={mobileRef}
+            emailRef={emailRef}
+            pincodeRef={pincodeRef}
+            cityRef={cityRef}
+            addressRef={addressRef}
+            isSubmitting={isSubmitting}
+          />,
+          document.body
+        )}
     </>
   );
 }

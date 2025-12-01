@@ -5,16 +5,16 @@ import { Facebook, Instagram, MessageCircle } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-b from-brown-900 to-brown-950 border-t z-[99] border-brown-800 w-full overflow-hidden">
+    <footer className="bg-gradient-to-b from-brown-900 bg-black to-brown-950 border-t z-[99] border-brown-800 w-full overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
           
           {/* Column 1 */}
           <div>
             <h2 className="text-3xl font-bold text-brown-200 mb-2">
               VASUNDHARA
             </h2>
-            <p className="text-brown-400 mb-6">100% Pure Peanut Oil</p>
+            <p className="text-brown-400 mb-6">100% Pure G20 Peanut Oil</p>
 
             <div className="flex gap-3">
               {[Facebook, Instagram, MessageCircle].map((Icon, i) => (
@@ -38,13 +38,12 @@ export default function Footer() {
               <li><Link href="/" className="hover:text-brown-200">Home</Link></li>
               <li><Link href="/about" className="hover:text-brown-200">About Us</Link></li>
               <li><Link href="/products" className="hover:text-brown-200">Our Products</Link></li>
-              <li><Link href="/cart" className="hover:text-brown-200">My Cart</Link></li>
               <li><Link href="/contact" className="hover:text-brown-200">Contact</Link></li>
             </ul>
           </div>
 
           {/* Column 3 */}
-          <div>
+          {/* <div>
             <h3 className="text-lg font-semibold text-brown-300 mb-4">Help</h3>
             <ul className="space-y-2 text-brown-400">
               <li><a className="hover:text-brown-200" href="#">FAQs</a></li>
@@ -52,7 +51,7 @@ export default function Footer() {
               <li><a className="hover:text-brown-200" href="#">Privacy Policy</a></li>
               <li><a className="hover:text-brown-200" href="#">Terms & Conditions</a></li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Column 4 */}
           <div>
@@ -60,17 +59,17 @@ export default function Footer() {
             <ul className="space-y-3 text-brown-400">
               <li>
                 <strong className="text-brown-300 block">Address:</strong>
-                Vasundhara Oil Factory <br /> Industrial Area, Gujarat
+                Dholidhar Road, Mota Bhadra, <br/>Ta:JamKandorna, Gujarat, India - 360405
               </li>
 
               <li>
                 <strong className="text-brown-300 block">Phone:</strong>
-                +91 98765 43210
+                +91 9898189510  |  +91 9662903961
               </li>
 
               <li>
                 <strong className="text-brown-300 block">Email:</strong>
-                info@vasundharaoil.com
+                vasundharaoil@gmail.com
               </li>
             </ul>
           </div>
