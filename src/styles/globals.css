@@ -25,6 +25,14 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Real dark mode (not Chrome auto-dark) */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #0d0d0d;
+    color: #ffffff;
+  }
+}
+
 .custom-toast {
   background: #fff !important;
   border-radius: 12px !important;
