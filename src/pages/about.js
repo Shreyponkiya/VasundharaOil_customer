@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import ProcessSection from "@/components/ProcessSection";
 import OilDropLoader from "@/components/OilDropLoader";
+import Head from "next/head";
 
 export const metadata = {
   title: "About | My Website",
@@ -68,6 +69,50 @@ export default function Home() {
 
   return (
     <main className="w-full bg-yellow-100 overflow-hidden">
+      <Head>
+        <title>
+          About Our GasiGhani Oil | Vasundhara Pure G20 peanuts Oils
+        </title>
+        <meta
+          name="description"
+          content="Learn about Vasundhara Pure G20 peanuts Oils, our commitment to quality, and the natural goodness in every bottle."
+        />
+        <meta
+          name="keywords"
+          content="cold pressed oil, groundnut oil, pure oil, vasundhara oil, healthy cooking oil, wood pressed oil, chemical free oil, natural groundnut oil, best oil for cooking"
+        />
+
+        <link rel="canonical" href="https://shreevasundharaoil.com" />
+
+        <meta
+          property="og:title"
+          content="Vasundhara Oils – 100% Pure Cold-Pressed Oils"
+        />
+        <meta
+          property="og:description"
+          content="Premium cold-pressed oils made from the finest G20 peanuts. Fresh, pure, and trusted by millions."
+        />
+        <meta property="og:url" content="https://shreevasundharaoil.com" />
+        <meta property="og:site_name" content="Vasundhara Oil" />
+        <meta property="og:locale" content="en_IN" />
+        <meta property="og:type" content="website" />
+
+        <meta property="og:image" content="/hero_image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta
+          property="og:image:alt"
+          content="Vasundhara Cold-Pressed Groundnut Oil"
+        />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Vasundhara Oils" />
+        <meta
+          name="twitter:description"
+          content="100% pure cold-pressed oils made from premium G20 peanuts."
+        />
+        <meta name="twitter:image" content="/hero_image.png" />
+      </Head>
       {/* ⭐ HERO SECTION ⭐ */}
       <section className="relative w-full overflow-hidden">
         <img

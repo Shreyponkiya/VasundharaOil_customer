@@ -10,8 +10,6 @@ export default function App({ Component, pageProps }) {
     <>
       {/* GLOBAL DEFAULT SEO (Can be overridden in each page) */}
       <Head>
-        <title>Vasundhara Oils – 100% Pure Cold-Pressed Oils</title>
-
         <meta
           name="description"
           content="Vasundhara – Premium cold-pressed groundnut oil extracted from fresh G20 peanuts. 100% natural, pure & chemical-free."
@@ -27,12 +25,12 @@ export default function App({ Component, pageProps }) {
         <link rel="icon" href="/favicon.ico" />
 
         {/* OG Tags */}
-        <meta property="og:title" content="Vasundhara Cold-Pressed Oils" />
+        <meta property="og:title" content="Vasundhara Desi-Ghani Oils" />
         <meta
           property="og:description"
           content="Fresh, pure and chemical-free cold-pressed oils trusted by thousands."
         />
-        <meta property="og:image" content="/hero_image.png" />
+        <meta property="og:image" content="hero_image.png" />
         <meta property="og:url" content="https://shreevasundharaoil.com" />
         <meta property="og:type" content="website" />
 

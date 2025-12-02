@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchProducts } from "../services/productService"; // Adjust the import path as needed
 import OilDropLoader from "@/components/OilDropLoader";
+import Head from "next/head";
 export default function HealthBenefitsPage() {
   const router = useRouter();
   const [products, setProducts] = useState([]);
@@ -16,18 +17,20 @@ export default function HealthBenefitsPage() {
         setLoading(true);
         setError(null);
         const apiResponse = await fetchProducts();
-        
+
         // Log the fetched payload for debugging
         console.log("Fetched API Payload for HealthBenefitsPage:", apiResponse);
-        
+
         // Ensure data is an array (axios wraps response in { data: [...] })
         const rawProducts = apiResponse || [];
-        
+
         // Map API response to component's expected structure (updated for new schema)
         const mappedProducts = rawProducts.map((item) => ({
           id: item._id,
           title: item.productName,
-          image: `${process.env.NEXT_PUBLIC_BASE_URL}${item.image}` || `${process.env.NEXT_PUBLIC_BASE_URL}/default-product.png`,
+          image:
+            `${process.env.NEXT_PUBLIC_BASE_URL}${item.image}` ||
+            `${process.env.NEXT_PUBLIC_BASE_URL}/default-product.png`,
           description: item.description || "",
           unit: item.unit || "kg",
           quantity: item.quantity || "",
@@ -35,7 +38,7 @@ export default function HealthBenefitsPage() {
           sellingPrice: item.sellingPrice || 0,
           discountPercentage: item.discountPercentage || 0,
         }));
-        
+
         setProducts(mappedProducts);
       } catch (err) {
         console.error("Failed to fetch products:", err);
@@ -49,9 +52,14 @@ export default function HealthBenefitsPage() {
   }, []);
 
   // Find the product with the maximum sellingPrice
-  const maxProduct = products.length > 0 
-    ? products.reduce((max, current) => (current.sellingPrice > max.sellingPrice ? current : max), products[0])
-    : null;
+  const maxProduct =
+    products.length > 0
+      ? products.reduce(
+          (max, current) =>
+            current.sellingPrice > max.sellingPrice ? current : max,
+          products[0]
+        )
+      : null;
 
   const handleBuyNow = () => {
     router.push("/products"); // Adjust route if your products page is at a different path
@@ -61,7 +69,9 @@ export default function HealthBenefitsPage() {
     return (
       <main className="bg-[#FFF8EA] text-[#4A3B2A]">
         <section className="py-16 px-6 text-center">
-          <p className="text-lg text-[#5A4633]"><OilDropLoader/></p>
+          <p className="text-lg text-[#5A4633]">
+            <OilDropLoader />
+          </p>
         </section>
       </main>
     );
@@ -79,6 +89,48 @@ export default function HealthBenefitsPage() {
 
   return (
     <main className="bg-[#FFF8EA] text-[#4A3B2A]">
+      <Head>
+        <title>Health Benefits | Vasundhara Pure G20 peanuts Oils</title>
+        <meta
+          name="description"
+          content="Discover the health benefits of Vasundhara Pure G20 peanuts Oils. Rich in nutrients, antioxidants, and heart-friendly fats for a healthier lifestyle."
+        />
+        <meta
+          name="keywords"
+          content="cold pressed oil, groundnut oil, pure oil, vasundhara oil, healthy cooking oil, wood pressed oil, chemical free oil, natural groundnut oil, best oil for cooking"
+        />
+
+        <link rel="canonical" href="https://shreevasundharaoil.com" />
+
+        <meta
+          property="og:title"
+          content="Vasundhara Oils – 100% Pure Cold-Pressed Oils"
+        />
+        <meta
+          property="og:description"
+          content="Premium cold-pressed oils made from the finest G20 peanuts. Fresh, pure, and trusted by millions."
+        />
+        <meta property="og:url" content="https://shreevasundharaoil.com" />
+        <meta property="og:site_name" content="Vasundhara Oil" />
+        <meta property="og:locale" content="en_IN" />
+        <meta property="og:type" content="website" />
+
+        <meta property="og:image" content="/hero_image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta
+          property="og:image:alt"
+          content="Vasundhara Cold-Pressed Groundnut Oil"
+        />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Vasundhara Oils" />
+        <meta
+          name="twitter:description"
+          content="100% pure cold-pressed oils made from premium G20 peanuts."
+        />
+        <meta name="twitter:image" content="/hero_image.png" />
+      </Head>
       {/* HERO */}
       <section className="py-16 px-6 text-center bg-gradient-to-r from-amber-100 to-yellow-200">
         <h1 className="text-5xl font-bold text-[#8B4513] mb-4">
@@ -183,15 +235,22 @@ export default function HealthBenefitsPage() {
                 className="mx-auto w-48 h-85 object-cover rounded-lg"
               />
               <h1 className="text-xl md:text-2xl">
-                {maxProduct.title} – {maxProduct.quantity} {maxProduct.unit.toUpperCase()}
+                {maxProduct.title} – {maxProduct.quantity}{" "}
+                {maxProduct.unit.toUpperCase()}
               </h1>
-              <p className="text-green-600 font-semibold text-2xl mt-2">₹{maxProduct.sellingPrice}</p>
-              <p className="text-sm text-[#5A4633] mt-2 max-w-md mx-auto">{maxProduct.description}</p>
+              <p className="text-green-600 font-semibold text-2xl mt-2">
+                ₹{maxProduct.sellingPrice}
+              </p>
+              <p className="text-sm text-[#5A4633] mt-2 max-w-md mx-auto">
+                {maxProduct.description}
+              </p>
             </>
           ) : (
-            <p className="text-[#5A4633]">No products available at the moment.</p>
+            <p className="text-[#5A4633]">
+              No products available at the moment.
+            </p>
           )}
-          <button 
+          <button
             onClick={handleBuyNow}
             className="px-8 py-3 bg-amber-600 text-white rounded-lg text-lg shadow-md hover:bg-amber-700 transition"
           >

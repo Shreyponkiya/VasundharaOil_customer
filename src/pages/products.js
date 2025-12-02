@@ -263,18 +263,6 @@ export default function ProductSection() {
 
         // Ensure data is an array (axios wraps response in { data: [...] })
         const rawProducts = apiResponse || [];
-        console.log("Raw Products Data:", rawProducts);
-
-        // Map API response to component's expected structure
-        // Updated for new schema:
-        // - _id -> id
-        // - productName -> title
-        // - sellingPrice -> discountPrice
-        // - mrp -> mrp
-        // - unit and quantity for display
-        // - discountPercentage (enriched from backend)
-        // - Expiry set to 1 year from now dynamically
-        // - image and description map directly; ensure image path is relative to backend base URL
         const mappedProducts = rawProducts.map((item) => ({
           id: item._id,
           title: item.productName,
@@ -302,6 +290,13 @@ export default function ProductSection() {
 
     loadProducts();
   }, []);
+
+  // SEO: Update document title on mount and products load
+  // useEffect(() => {
+  //   if (mounted && products.length > 0) {
+  //     document.title = `Our Products | Premium Oils & Essentials - ${products.length} Items Available`;
+  //   }
+  // }, [mounted, products]);
 
   // Cart Functions
   const addToCart = (product) => {
@@ -458,16 +453,20 @@ export default function ProductSection() {
     }
   };
 
-  // Cart Button Component
+  // Cart Button Component - Fixed centering on mobile using left-0 right-0 flex justify-center
   const CartButton = () => (
-    <button
-      onClick={() => setShowCart(true)}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-yellow-500 text-black font-bold px-6 py-3 rounded-full shadow-lg hover:bg-yellow-400 transition flex items-center gap-2"
+    <div
+      className="fixed bottom-6 left-0 right-0 flex justify-start sm:justify-center px-4"
       style={{ zIndex: 99997 }}
     >
-      <ShoppingCart className="w-5 h-5" />
-      Cart ({cart.length})
-    </button>
+      <button
+        onClick={() => setShowCart(true)}
+        className="bg-yellow-500 text-black font-bold px-6 py-3 rounded-full shadow-lg hover:bg-yellow-400 transition flex items-center gap-2"
+      >
+        <ShoppingCart className="w-5 h-5" />
+        Cart ({cart.length})
+      </button>
+    </div>
   );
 
   // Cart Drawer Component
@@ -561,14 +560,50 @@ export default function ProductSection() {
     </>
   );
 
+  // Structured Data for SEO (JSON-LD for product list)
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Our Products",
+    description:
+      "A curated selection of premium oils and essential products available for purchase.",
+    numberOfItems: products.length,
+    itemListElement: products.map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Product",
+        name: product.title,
+        image: product.image,
+        description:
+          product.description ||
+          `High-quality ${product.title} with ${
+            product.quantity
+          } ${product.unit.toUpperCase()} packaging. Expiry: ${
+            product.expiry
+          }.`,
+        sku: product.id,
+        offers: {
+          "@type": "Offer",
+          price: product.discountPrice,
+          priceCurrency: "INR",
+          availability: "https://schema.org/InStock",
+          priceValidUntil: new Date(
+            new Date().setFullYear(new Date().getFullYear() + 1)
+          )
+            .toISOString()
+            .split("T")[0],
+        },
+      },
+    })),
+  };
+
   return (
     <>
       <div className="p-4 md:p-10 bg-gray-100 min-h-screen text-black pb-24 relative">
-        {/* Cart Button - Rendered via Portal */}
-
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-yellow-700 mb-10">
+        <h1 className="text-3xl md:text-4xl font-bold text-center text-yellow-700 mb-10">
           Our Products
-        </h2>
+        </h1>
 
         {/* Product Grid */}
         {error ? (
@@ -590,16 +625,21 @@ export default function ProductSection() {
               const qty = getQty(product.id);
 
               return (
-                <div
+                <article
                   key={product.id}
                   className="bg-white p-5 rounded-xl shadow-lg border border-yellow-500 flex flex-col justify-between hover:shadow-xl transition-shadow relative"
+                  itemScope
+                  itemType="https://schema.org/Product"
                 >
                   <div>
                     <div className="relative">
                       <img
                         src={product.image}
-                        alt={product.title}
+                        alt={`${
+                          product.title
+                        } - Premium ${product.unit.toUpperCase()} product`}
                         className="w-full h-52 object-contain rounded-lg bg-white p-2"
+                        itemProp="image"
                       />
                       {product.discountPercentage > 0 && (
                         <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-bold">
@@ -608,7 +648,10 @@ export default function ProductSection() {
                       )}
                     </div>
 
-                    <h3 className="text-xl font-bold mt-4 text-black">
+                    <h3
+                      className="text-xl font-bold mt-4 text-black"
+                      itemProp="name"
+                    >
                       {product.title}
                     </h3>
 
@@ -622,9 +665,25 @@ export default function ProductSection() {
                       <span className="line-through text-red-500">
                         ₹{product.mrp}
                       </span>
-                      <span className="text-green-600 font-bold text-lg ml-2">
+                      <span
+                        className="text-green-600 font-bold text-lg ml-2"
+                        itemProp="offers"
+                        itemScope
+                        itemType="https://schema.org/Offer"
+                      >
                         ₹{product.discountPrice}
+                        <meta
+                          itemProp="price"
+                          content={product.discountPrice}
+                        />
+                        <meta itemProp="priceCurrency" content="INR" />
                       </span>
+                    </p>
+                    <p
+                      className="text-gray-600 text-sm mt-1"
+                      itemProp="description"
+                    >
+                      {product.description}
                     </p>
                   </div>
 
@@ -663,10 +722,18 @@ export default function ProductSection() {
                       </div>
                     )}
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>
+        )}
+
+        {/* SEO: Structured Data JSON-LD */}
+        {!loading && products.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          />
         )}
       </div>
 
