@@ -25,14 +25,26 @@ export default function App({ Component, pageProps }) {
         <link rel="icon" href="/favicon.ico" />
 
         {/* OG Tags */}
-        <meta property="og:title" content="Vasundhara Desi-Ghani Oils" />
-        <meta
-          property="og:description"
-          content="Fresh, pure and chemical-free cold-pressed oils trusted by thousands."
-        />
-        <meta property="og:image" content="hero_image.png" />
-        <meta property="og:url" content="https://shreevasundharaoil.com" />
-        <meta property="og:type" content="website" />
+        {/* OG Tags */}
+<meta property="og:title" content="Vasundhara Desi-Ghani Oils" />
+<meta
+  property="og:description"
+  content="Fresh, pure and chemical-free cold-pressed oils trusted by thousands."
+/>
+<meta
+  property="og:image"
+  content="https://shreevasundharaoil.com/hero_image.png"
+/>
+<meta property="og:url" content="https://shreevasundharaoil.com" />
+<meta property="og:type" content="website" />
+
+{/* Twitter */}
+<meta name="twitter:card" content="summary_large_image" />
+<meta
+  name="twitter:image"
+  content="https://shreevasundharaoil.com/hero_image.png"
+/>
+
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
